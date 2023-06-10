@@ -59,7 +59,7 @@ func (s *IMServiceImpl) Pull(ctx context.Context, req *rpc.PullRequest) (*rpc.Pu
 
 	end := start + limit
 
-	messages, err := rdb.GetMessagesByRoomID(ctx, roomID, start, end, req.getReverse())
+	messages, err := rdb.GetMessagesByRoomID(ctx, roomID, start, end, req.GetReverse())
 
 	if err != nil {
 		return nil, err
@@ -89,8 +89,8 @@ func (s *IMServiceImpl) Pull(ctx context.Context, req *rpc.PullRequest) (*rpc.Pu
 	resp := rpc.NewPullResponse()
 	resp.Messages = respMessages
 	resp.Code, resp.Msg = 0, "success"
-	resp.hasMore = &hasMore
-	resp.nextCursor = &nextCursor
+	resp.HasMore = &hasMore
+	resp.NextCursor = &nextCursor
 
 	return resp, nil
 }
