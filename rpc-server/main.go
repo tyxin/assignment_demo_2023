@@ -11,14 +11,18 @@ import (
 	etcd "github.com/kitex-contrib/registry-etcd"
 )
 
+var (
+	rdb = &RedisClient{}
+)
+
 func main() {
 
-	ctx:= context.Background()
+	ctx := context.Background()
 
-	err := rdb.InitClient(ctx, "redis:6379","")
+	err := rdb.InitClient(ctx, "redis:6379", "")
 
-	if err!= nil {
-		errMessage := fmt.Sprintf("failed to initialize client, err: %v",err)
+	if err != nil {
+		errMessage := fmt.Sprintf("failed to initialize client, err: %v", err)
 		log.Fatal(errMessage)
 	}
 

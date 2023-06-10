@@ -25,7 +25,7 @@ func (s *IMServiceImpl) Send(ctx context.Context, req *rpc.SendRequest) (*rpc.Se
 		Timestamp: timestamp,
 	}
 
-	roomID, err := getRoomID(req.Message.getChat())
+	roomID, err := getRoomID(req.Message.GetChat())
 
 	if err != nil {
 		return nil, ctx.Err()
@@ -45,21 +45,21 @@ func (s *IMServiceImpl) Send(ctx context.Context, req *rpc.SendRequest) (*rpc.Se
 
 func (s *IMServiceImpl) Pull(ctx context.Context, req *rpc.PullRequest) (*rpc.PullResponse, error) {
 
-	roomID, err := getRoomID(req.getChat())
+	roomID, err := getRoomID(req.GetChat())
 
 	if err != nil {
 		return nil, err
 	}
 
-	limit := int64(req.getLimit())
+	limit := int64(req.GetLimit())
 	if limit == 0 {
 		limit = 10
 	}
-	start := req.getCursor()
+	start := req.GetCursor()
 
 	end := start + limit
 
-	messages, err := rdb.getMessagesByRoomID(ctx, roomID, start, end, req.getReverse())
+	messages, err := rdb.GetMessagesByRoomID(ctx, roomID, start, end, req.getReverse())
 
 	if err != nil {
 		return nil, err
@@ -77,7 +77,7 @@ func (s *IMServiceImpl) Pull(ctx context.Context, req *rpc.PullRequest) (*rpc.Pu
 			break
 		}
 		temp := &rpc.Message{
-			Chat:     req.getChat(),
+			Chat:     req.GetChat(),
 			Text:     msg.Message,
 			Sender:   msg.Sender,
 			SendTime: msg.Timestamp,
@@ -99,11 +99,11 @@ func validateSendRequest(req *rpc.SendRequest) error {
 
 	senders := strings.Split(req.Message.Chat, ":")
 
-	if (len(senders)!=2) {
-		return fmt.Errorf("invalid Chat ID '%s', should be in format (user1:user2)", req.Message.getChat())
+	if len(senders) != 2 {
+		return fmt.Errorf("invalid Chat ID '%s', should be in format (user1:user2)", req.Message.GetChat())
 	}
 
-	sender1, sender2 := senders[0],senders[1]
+	sender1, sender2 := senders[0], senders[1]
 
 	if (req.Message.GetSender() != sender1) && (req.Message.GetSender() != sender2) {
 		return fmt.Errorf("sender '%s' not in room", req.Message.GetSender())
@@ -111,24 +111,24 @@ func validateSendRequest(req *rpc.SendRequest) error {
 
 	return nil
 
-
 }
 
 func getRoomID(chat string) (string, error) {
 
 	var roomID string
-	senders := strings.Split(chat,":")
+	senders := strings.Split(chat, ":")
 
-	if (len(senders)!=2){
-		return "", fmt.Errorf("invalid Chat ID '%s', should be in the form (user1:user2)",chat)
+	if len(senders) != 2 {
+		return "", fmt.Errorf("invalid Chat ID '%s', should be in the form (user1:user2)", chat)
 	}
 
 	sender1, sender2 := senders[0], senders[1]
 
-	if comp := strings.Compare(sender1,sender2); comp==1{
-		roomID = fmt.Sprintf("%s:%s",sender2,sender1)
-	} else { roomID = fmt.Sprintf("%s:%s",sender1,sender2)}
+	if comp := strings.Compare(sender1, sender2); comp == 1 {
+		roomID = fmt.Sprintf("%s:%s", sender2, sender1)
+	} else {
+		roomID = fmt.Sprintf("%s:%s", sender1, sender2)
+	}
 
 	return roomID, nil
 }
-

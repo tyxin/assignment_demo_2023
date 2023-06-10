@@ -18,7 +18,7 @@ func (c *RedisClient) InitClient(ctx context.Context, address, password string) 
 		DB:       0,
 	})
 
-	if err := r.Ping(ctx).Err(); err != nil {
+	if err := client.Ping(ctx).Err(); err != nil {
 		return err
 	}
 
